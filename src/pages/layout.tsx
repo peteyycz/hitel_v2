@@ -17,12 +17,16 @@ export const Layout: FC<LayoutProps> = ({ children, title }) => {
   return (
     <html lang="en">
       {cssFile ? raw(`<link rel="stylesheet" href="${cssFile}">`) : null}
+
+      {/* TODO: Replace this with vite build */}
+      <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {title && <title>{title}</title>}
       </head>
-      <body>
+      <body className="m-5">
         {children}
         {isProd
           ? null

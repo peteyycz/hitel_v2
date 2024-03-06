@@ -2,6 +2,7 @@ import { Hono } from "hono";
 
 import { IndexPage } from "./pages/index";
 import { serveStatic } from "hono/bun";
+import { LoanTablePage } from "./pages/loan-table";
 
 // Configuration
 const port = process.env.PORT || 5050;
@@ -19,6 +20,16 @@ app.get("/", (c) => {
   const term = maybeParse(c.req.query("term"));
 
   return c.html(<IndexPage rate={rate} term={term} loanAmount={loanAmount} />);
+});
+
+app.get("loan-table", (c) => {
+  const loanAmount = maybeParse(c.req.query("loanAmount"));
+  const rate = maybeParse(c.req.query("rate"));
+  const term = maybeParse(c.req.query("term"));
+
+  return c.html(
+    <LoanTablePage rate={rate} term={term} loanAmount={loanAmount} />
+  );
 });
 
 Bun.serve({

@@ -1,13 +1,7 @@
-import {
-  getMonthlyLoan,
-  getMonthlyPayment,
-  round,
-  separate,
-  toMonthlyRate,
-} from "../util/loan";
 import { Layout } from "./layout";
+import { LoanTablePage } from "./loan-table";
 
-export const DEFAULT_LOAN_AMOUNT = 32_960_000;
+export const DEFAULT_LOAN_AMOUNT = 32_000_000;
 export const DEFAULT_RATE = 4.5;
 export const DEFAULT_TERM = 20 * 12;
 
@@ -16,49 +10,68 @@ export const IndexPage = ({
   rate = DEFAULT_RATE,
   term = DEFAULT_TERM,
 }) => {
-  const monthlyPayment = getMonthlyPayment(loanAmount, rate, term);
-  const terms = [
-    ...getMonthlyLoan({
-      monthlyRate: toMonthlyRate(rate),
-      loanAmount,
-      monthlyPayment,
-      term,
-    }),
-  ];
-
   return (
     <Layout title="Homepage">
-      <p>{separate(round(loanAmount, 0))} Ft</p>
-      <p>{separate(round(monthlyPayment, 0))} Ft</p>
-      <p>{rate} %</p>
-      <table className="m-5 shadow bg-white rounded-md border p-5">
-        <thead className="shadow">
-          <tr>
-            <td className="p-3 text-xl">Hónap</td>
-            <td className="p-3 text-xl">Tartozás</td>
-            <td className="p-3 text-xl">Tőketartozás csökkenés</td>
-            <td className="p-3 text-xl">Kamat</td>
-          </tr>
-        </thead>
-        <tbody className="divide-y">
-          {terms.map(({ loanAmount, capitalDebtDecrease, interest }, i) => {
-            return (
-              <tr>
-                <td className="text-right px-2 py-1">{i + 1}.</td>
-                <td className="text-right px-2 py-1">
-                  {separate(round(loanAmount, 0))} Ft
-                </td>
-                <td className="text-right px-2 py-1">
-                  {separate(round(capitalDebtDecrease, 0))} Ft
-                </td>
-                <td className="text-right px-2 py-1">
-                  {separate(round(interest, 0))} Ft
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <form
+        className="flex justify-center items-center"
+        hx-get="/loan-table"
+        hx-target="#results"
+        hx-trigger="change delay:500ms"
+      >
+        <div className="stats shadow">
+          <div className="stat">
+            <div class="stat-title">Hitelösszeg</div>
+            <div className="stat-value">
+              <label className="input flex items-center gap-2" htmlFor="rate">
+                <input
+                  className="grow"
+                  type="number"
+                  name="loanAmount"
+                  step={1_000_000}
+                  value={loanAmount}
+                />
+                <span class="badge">Ft</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-title">THM</div>
+            <div className="stat-value">
+              <label className="input flex items-center gap-2" htmlFor="rate">
+                <input
+                  className="grow"
+                  type="number"
+                  name="rate"
+                  step={0.1}
+                  value={rate}
+                />
+                <span class="badge">%</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="stat">
+            <div className="stat-title">Futamidő</div>
+            <div className="stat-value">
+              <label className="input flex items-center gap-2" htmlFor="term">
+                <input
+                  className="grow"
+                  type="number"
+                  name="term"
+                  step={12}
+                  value={term}
+                />
+                <span class="badge">hónap</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div id="results">
+        <LoanTablePage rate={rate} loanAmount={loanAmount} term={term} />
+      </div>
     </Layout>
   );
 };
