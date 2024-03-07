@@ -27,7 +27,7 @@ export const IndexPage = ({
                   className="grow"
                   type="number"
                   name="loanAmount"
-                  step={1_000_000}
+                  step={100_000}
                   value={loanAmount}
                 />
                 <span class="badge">Ft</span>

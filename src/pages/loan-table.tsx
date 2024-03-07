@@ -26,8 +26,8 @@ export const LoanTablePage = ({
   ];
 
   return (
-    <>
-      <div className="flex items-center justify-center">
+    <div className="mt-5 mx-5">
+      <div className="mb-5 flex items-center justify-center">
         <div className="stats shadow">
           <div className="stat">
             <div className="stat-title">Törlesztőrészlet</div>
@@ -56,7 +56,7 @@ export const LoanTablePage = ({
         </div>
       </div>
 
-      <table className="table table-zebra-zebra shadow">
+      <table className="table table-sm table-pin-rows table-zebra-zebra shadow">
         <thead>
           <tr>
             <td>Hónap</td>
@@ -84,6 +84,6 @@ export const LoanTablePage = ({
           })}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };

@@ -9,17 +9,23 @@ type LayoutProps = {
 const isProd = process.env.NODE_ENV === "production";
 
 const manifestPath = "../../dist/.vite/manifest.json";
-const cssFile = isProd
-  ? (await import(manifestPath)).default["src/client.tsx"]?.css?.at(0)
-  : null;
+const getClientAssets = async () => {
+  const clientFile = (await import(manifestPath)).default["src/client.tsx"];
+  return {
+    css: clientFile?.css?.at(0),
+    js: clientFile?.file,
+  };
+};
+
+const { css: cssFile, js: jsFile } = isProd
+  ? await getClientAssets()
+  : { css: null, js: null };
 
 export const Layout: FC<LayoutProps> = ({ children, title }) => {
   return (
     <html lang="en">
       {cssFile ? raw(`<link rel="stylesheet" href="${cssFile}">`) : null}
-
-      {/* TODO: Replace this with vite build */}
-      <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+      {jsFile ? raw(`<script src="${jsFile}"></script>`) : null}
 
       <head>
         <meta charset="UTF-8" />
