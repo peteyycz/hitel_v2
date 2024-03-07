@@ -1,4 +1,5 @@
 import { Layout } from "./layout";
+import { LoanAmountPage } from "./loan-amount";
 import { LoanTablePage } from "./loan-table";
 
 export const DEFAULT_LOAN_AMOUNT = 32_000_000;
@@ -20,23 +21,32 @@ export const IndexPage = ({
       >
         <div className="stats shadow">
           <div className="stat">
-            <div class="stat-title">Hitelösszeg</div>
-            <div className="stat-value">
-              <label className="input flex items-center gap-2" htmlFor="rate">
-                <input
-                  className="grow"
-                  type="number"
-                  name="loanAmount"
-                  step={100_000}
-                  value={loanAmount}
-                />
-                <span class="badge">Ft</span>
-              </label>
+            <div className="stat-title">
+              <div className="form-control">
+                <label className="label cursor-pointer flex items-center justify-between">
+                  <span>Hitelösszeg</span>
+                  <input
+                    hx-get="/loan-amount"
+                    hx-target="#loan-amount"
+                    type="checkbox"
+                    name="showPropertyValue"
+                    className="toggle"
+                    hx-include="[name='loanAmount'],[name='propertyValue'],[name='downPayment']"
+                  />
+                  <span>Ingatlan értéke</span>
+                </label>
+              </div>
+            </div>
+            <div id="loan-amount" className="stat-value">
+              <LoanAmountPage
+                showPropertyValue={false}
+                loanAmount={loanAmount}
+              />
             </div>
           </div>
 
           <div className="stat">
-            <div className="stat-title">THM</div>
+            <div className="stat-title">Éves kamat</div>
             <div className="stat-value">
               <label className="input flex items-center gap-2" htmlFor="rate">
                 <input
@@ -46,7 +56,7 @@ export const IndexPage = ({
                   step={0.1}
                   value={rate}
                 />
-                <span class="badge">%</span>
+                <span className="badge">%</span>
               </label>
             </div>
           </div>
@@ -62,7 +72,7 @@ export const IndexPage = ({
                   step={12}
                   value={term}
                 />
-                <span class="badge">hónap</span>
+                <span className="badge">hónap</span>
               </label>
             </div>
           </div>

@@ -34,6 +34,10 @@ export const LoanTablePage = ({
             <div className="stat-value">
               {separate(round(monthlyPayment, 0))} Ft
             </div>
+            <div className="stat-desc">
+              legalább {separate(round(monthlyPayment * 2, 0))} Ft havi bevétel
+              esetén igényelhető
+            </div>
           </div>
           <div className="stat">
             <div className="stat-title">Teljes visszafizetett összeg</div>
