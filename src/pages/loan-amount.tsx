@@ -31,6 +31,7 @@ export const LoanAmountPage = (props: LoanAmountPageProps) => {
             className="input flex items-center gap-2"
             htmlFor="downPayment"
           >
+            <span>Önerő</span>
             <input
               className="grow"
               type="number"

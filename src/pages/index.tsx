@@ -1,16 +1,33 @@
+import {
+  DEFAULT_DOWNPAYMENT,
+  DEFAULT_LOAN_AMOUNT,
+  DEFAULT_PROPERTY_VALUE,
+} from "../util/constants";
 import { Layout } from "./layout";
 import { LoanAmountPage } from "./loan-amount";
 import { LoanTablePage } from "./loan-table";
 
-export const DEFAULT_LOAN_AMOUNT = 32_000_000;
-export const DEFAULT_RATE = 4.5;
-export const DEFAULT_TERM = 20 * 12;
+type IndexPageProps = {
+  rate: number;
+  term: number;
+  showPropertyValue?: boolean;
+  breakdown: "yearly" | "monthly";
+} & (
+  | {
+      propertyValue?: number;
+      downPayment?: number;
+    }
+  | {
+      loanAmount?: number;
+    }
+);
 
 export const IndexPage = ({
-  loanAmount = DEFAULT_LOAN_AMOUNT,
-  rate = DEFAULT_RATE,
-  term = DEFAULT_TERM,
-}) => {
+  showPropertyValue,
+  rate,
+  term,
+  ...props
+}: IndexPageProps) => {
   return (
     <Layout title="Homepage">
       <form
@@ -31,6 +48,7 @@ export const IndexPage = ({
                     type="checkbox"
                     name="showPropertyValue"
                     className="toggle"
+                    checked
                     hx-include="[name='loanAmount'],[name='propertyValue'],[name='downPayment']"
                   />
                   <span>Ingatlan értéke</span>
@@ -38,10 +56,13 @@ export const IndexPage = ({
               </div>
             </div>
             <div id="loan-amount" className="stat-value">
-              <LoanAmountPage
-                showPropertyValue={false}
-                loanAmount={loanAmount}
-              />
+              {"propertyValue" in props && (
+                <LoanAmountPage
+                  showPropertyValue={true}
+                  propertyValue={props.propertyValue ?? DEFAULT_PROPERTY_VALUE}
+                  downPayment={props.downPayment ?? DEFAULT_DOWNPAYMENT}
+                />
+              )}
             </div>
           </div>
 
@@ -80,7 +101,23 @@ export const IndexPage = ({
       </form>
 
       <div id="results">
-        <LoanTablePage rate={rate} loanAmount={loanAmount} term={term} />
+        {"propertyValue" in props && (
+          <LoanTablePage
+            breakdown="monthly"
+            rate={rate}
+            term={term}
+            propertyValue={props.propertyValue ?? DEFAULT_PROPERTY_VALUE}
+            downPayment={props.downPayment ?? DEFAULT_DOWNPAYMENT}
+          />
+        )}
+        {"loanAmount" in props && (
+          <LoanTablePage
+            breakdown="monthly"
+            rate={rate}
+            term={term}
+            loanAmount={props.loanAmount ?? DEFAULT_LOAN_AMOUNT}
+          />
+        )}
       </div>
     </Layout>
   );

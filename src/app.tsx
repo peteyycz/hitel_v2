@@ -4,6 +4,7 @@ import { IndexPage } from "./pages/index";
 import { serveStatic } from "hono/bun";
 import { LoanTablePage } from "./pages/loan-table";
 import { LoanAmountPage } from "./pages/loan-amount";
+import { DEFAULT_RATE, DEFAULT_TERM } from "./util/constants";
 
 // Configuration
 const port = process.env.PORT || 5050;
@@ -16,26 +17,64 @@ const maybeParse = (n?: string): number | undefined =>
   typeof n !== "undefined" ? Number(n) : n;
 
 app.get("/", (c) => {
+  const showPropertyValue = Boolean(c.req.query("showPropertyValue"));
   const loanAmount = maybeParse(c.req.query("loanAmount"));
-  const rate = maybeParse(c.req.query("rate"));
-  const term = maybeParse(c.req.query("term"));
+  const propertyValue = maybeParse(c.req.query("propertyValue"));
+  const downPayment = maybeParse(c.req.query("downPayment"));
+  const rate = maybeParse(c.req.query("rate")) ?? DEFAULT_RATE;
+  const term = maybeParse(c.req.query("term")) ?? DEFAULT_TERM;
 
-  return c.html(<IndexPage rate={rate} term={term} loanAmount={loanAmount} />);
+  if (loanAmount) {
+    return c.html(
+      <IndexPage
+        rate={rate}
+        term={term}
+        showPropertyValue={showPropertyValue}
+        loanAmount={loanAmount}
+        breakdown="yearly"
+      />
+    );
+  }
+
+  return c.html(
+    <IndexPage
+      rate={rate}
+      term={term}
+      showPropertyValue={showPropertyValue}
+      propertyValue={propertyValue}
+      downPayment={downPayment}
+      breakdown="yearly"
+    />
+  );
 });
 
 app.get("loan-table", (c) => {
-  let loanAmount = maybeParse(c.req.query("loanAmount"));
-  if (!loanAmount) {
-    const propertyValue = maybeParse(c.req.query("propertyValue"));
-    const downPayment = maybeParse(c.req.query("downPayment"));
-    loanAmount = propertyValue! * (1 - downPayment! / 100);
+  const loanAmount = Number(c.req.query("loanAmount"));
+  const propertyValue = Number(c.req.query("propertyValue"));
+  const downPayment = Number(c.req.query("downPayment"));
+
+  const rate = Number(c.req.query("rate"));
+  const term = Number(c.req.query("term"));
+
+  if (loanAmount) {
+    return c.html(
+      <LoanTablePage
+        breakdown="monthly"
+        rate={rate}
+        term={term}
+        loanAmount={loanAmount}
+      />
+    );
   }
 
-  const rate = maybeParse(c.req.query("rate"));
-  const term = maybeParse(c.req.query("term"));
-
   return c.html(
-    <LoanTablePage rate={rate} term={term} loanAmount={loanAmount} />
+    <LoanTablePage
+      breakdown="monthly"
+      rate={rate}
+      term={term}
+      propertyValue={propertyValue}
+      downPayment={downPayment}
+    />
   );
 });
 

@@ -26,6 +26,34 @@ export function* getMonthlyLoan({
   }
 }
 
+type Breakdown = "yearly" | "monthly";
+
+type DebtPeriod = {
+  loanAmount: number;
+  capitalDebtDecrease: number;
+  interest: number;
+};
+
+export const monthlyToYearly = (monthly: DebtPeriod[]) => {
+  return monthly.reduce((yearly: DebtPeriod[], currentMonth, i) => {
+    const year = Math.floor(i / 12);
+    const currentYear = yearly[year];
+    if (!currentYear) {
+      return [...yearly, currentMonth];
+    }
+    const [head, ...tail] = yearly.reverse();
+    return [
+      ...tail.reverse(),
+      {
+        loanAmount: currentMonth.loanAmount,
+        capitalDebtDecrease:
+          head.capitalDebtDecrease + currentMonth.capitalDebtDecrease,
+        interest: head.interest + currentMonth.interest,
+      },
+    ];
+  }, []);
+};
+
 export const toMonthlyRate = (yearlyRate: number) => yearlyRate / (100 * 12);
 
 export const getMonthlyPayment = (amount: number, rate: number, term: number) =>
